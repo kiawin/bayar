@@ -21,9 +21,9 @@ A CreditCard provider has following attributes:
 Bayar supports multiple payment providers. We have to determine which provider to use based on the amount and payment method.
 
 Credit card provider:
-# Paypal
-# Maybank
-# HSBC
+- #1 Paypal
+- #2 Maybank
+- #3 HSBC
 
 Some sample rules :
 - "if amount is above $1000 then use CreditCardProvider#1 (Paypal)"
