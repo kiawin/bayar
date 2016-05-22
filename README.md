@@ -38,10 +38,10 @@ Some assumptions:
 Libraries
 =========
 
-# Spring Boot : http://projects.spring.io/spring-boot/
-# EasyRules : http://www.easyrules.org/
-# CountryCode: http://takahikokawasaki.github.io/nv-i18n/
-# JavaMoney: https://github.com/JavaMoney
+- Spring Boot : http://projects.spring.io/spring-boot/
+- EasyRules : http://www.easyrules.org/
+- CountryCode: http://takahikokawasaki.github.io/nv-i18n/
+- JavaMoney: https://github.com/JavaMoney
 
 To Run
 =======
