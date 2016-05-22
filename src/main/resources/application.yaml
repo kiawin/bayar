@@ -1,0 +1,17 @@
+# Fees (in percentage)
+paymentProviderFees:
+  direct:
+    generic:
+      default: 0
+  credit:
+    paypal:
+      default: 2.1
+      visa: 2.2
+    maybank:
+      default: 3.1
+      amex: 3.2
+      visa: 3.3
+    hsbc:
+      default: 4.1
+    generic:
+      default: 5.1
