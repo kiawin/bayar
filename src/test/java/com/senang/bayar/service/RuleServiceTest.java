@@ -2,6 +2,7 @@ package com.senang.bayar.service;
 
 import com.neovisionaries.i18n.CountryCode;
 import com.senang.bayar.core.invoice.Invoice;
+import com.senang.bayar.core.provider.*;
 import com.senang.bayar.core.setting.CreditCardPaymentFee;
 import com.senang.bayar.core.setting.DirectDebitPaymentFee;
 import org.javamoney.moneta.FastMoney;
@@ -25,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -116,6 +118,7 @@ public class RuleServiceTest {
 
         ruleService.enable(invoice, creditCardPaymentFee);
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(PaypalCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Paypal"));
         assertThat(capture.toString(), containsString("Rule: Amount above $1000 rule"));
         assertThat(capture.toString(), containsString("Amount: MYR 1001.00000"));
@@ -135,6 +138,7 @@ public class RuleServiceTest {
 
         ruleService.enable(invoice, creditCardPaymentFee);
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(GenericCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Generic"));
         assertThat(capture.toString(), containsString("Rule: Credit Card - Default rule"));
         assertThat(capture.toString(), containsString("Amount: MYR 100.00000"));
@@ -156,9 +160,11 @@ public class RuleServiceTest {
 
         // NOTE: Instead of triggering default rule,
         // local bank direct debit rule will be loaded
+        assertFalse(invoice.getPaymentProvider().getClass().equals(GenericDirectDebitPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), not("Generic"));
         assertFalse(capture.toString().contains("Rule: Direct Debit - Default rule"));
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(PublicBankDirectDebitPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("PublicBank"));
         assertThat(capture.toString(), containsString("Rule: Direct Debit Rule - Prioritize Local Bank"));
         assertThat(capture.toString(), containsString("Bank: PublicBank"));
@@ -179,6 +185,7 @@ public class RuleServiceTest {
 
         ruleService.enable(invoice, directDebitPaymentFee);
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(PublicBankDirectDebitPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("PublicBank"));
         assertThat(capture.toString(), containsString("Rule: Direct Debit Rule - Prioritize Local Bank"));
         assertThat(capture.toString(), containsString("Bank: PublicBank"));
@@ -199,6 +206,7 @@ public class RuleServiceTest {
 
         ruleService.enable(invoice, directDebitPaymentFee);
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(DbsDirectDebitPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Dbs"));
         assertThat(capture.toString(), containsString("Rule: Direct Debit Rule - Prioritize Local Bank"));
         assertThat(capture.toString(), containsString("Bank: Dbs"));
@@ -221,9 +229,11 @@ public class RuleServiceTest {
 
         // NOTE: Instead of triggering amount above $1000 rule,
         // Malaysia AMEX rule will be loaded
+        assertFalse(invoice.getPaymentProvider().getClass().equals(PaypalCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), not("Paypal"));
         assertFalse(capture.toString().contains("Rule: Amount above $1000 rule"));
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(MaybankCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Maybank"));
         assertThat(capture.toString(), containsString("Rule: Malaysia AMEX"));
         assertThat(capture.toString(), containsString("Amount: MYR 1001.00000"));
@@ -245,9 +255,11 @@ public class RuleServiceTest {
 
         // NOTE: Instead of triggering Malaysia AMEX,
         // Amount above $1000 rule will be loaded
+        assertFalse(invoice.getPaymentProvider().getClass().equals(MaybankCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), not("Maybank"));
         assertFalse(capture.toString().contains("Rule: Malaysia AMEX"));
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(PaypalCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Paypal"));
         assertThat(capture.toString(), containsString("Rule: Amount above $1000 rule"));
         assertThat(capture.toString(), containsString("Amount: SGD 1001.00000"));
@@ -269,8 +281,10 @@ public class RuleServiceTest {
 
         // NOTE: Instead of using Maybank,
         // Paypal will be chosen as preferred provider
+        assertFalse(invoice.getPaymentProvider().getClass().equals(MaybankCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), not("Maybank"));
 
+        assertTrue(invoice.getPaymentProvider().getClass().equals(PaypalCreditCardPaymentProvider.class));
         assertThat(invoice.getPaymentProvider().getName(), is("Paypal"));
         assertThat(capture.toString(), containsString("Rule: Australia VISA"));
         assertThat(capture.toString(), containsString("Amount: AUD 1001.00000"));
